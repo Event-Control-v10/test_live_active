@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COT'VIBES FESTIVAL 2026 | COTONOU</title>
+    
+    <!-- Polices & Icônes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- SCRIPT FEDAPAY -->
+    <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+
+    <style>
+        /* --- DESIGN SYSTEM --- */
+        :root {
+            --bg: #050505;
+            --primary: #CCFF00; /* Jaune Acide */
+            --accent: #FF0055; /* Rose Vif */
+            --text: #ffffff;
+            --card: #111;
+            --error: #ff4757;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+        h1, h2, h3 { font-family: 'Syne', sans-serif; text-transform: uppercase; line-height: 0.9; }
+
+        /* --- HEADER --- */
+        header { position: fixed; top: 0; width: 100%; z-index: 999; background: rgba(5,5,5,0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        nav { max-width: 1300px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+        .logo span { color: var(--primary); }
+        .btn-nav { background: white; color: black; padding: 10px 25px; border-radius: 30px; font-weight: 800; font-size: 13px; text-transform: uppercase; cursor: pointer; border: none; }
+
+        /* --- HERO --- */
+        .hero {
+            min-height: 90vh; display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; padding: 20px;
+            background: linear-gradient(to bottom, rgba(5,5,5,0.3), rgba(5,5,5,1)), 
+                        url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+        .hero h1 { font-size: clamp(50px, 12vw, 120px); margin-bottom: 20px; text-shadow: 0 0 40px rgba(0,0,0,0.6); }
+        .hero p { font-size: clamp(16px, 4vw, 24px); letter-spacing: 4px; font-weight: 700; margin-bottom: 40px; color: var(--primary); }
+
+        /* --- LINE UP GRID XXL --- */
+        .section { padding: 80px 20px; max-width: 1350px; margin: 0 auto; }
+        .sec-header { text-align: center; margin-bottom: 60px; }
+        .sec-header h2 { font-size: clamp(30px, 6vw, 70px); margin-bottom: 10px; }
+
+        .lineup-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        @media (max-width: 1024px) { .lineup-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .lineup-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .lineup-grid { grid-template-columns: 1fr; } }
+
+        .artist-card { position: relative; height: 380px; border-radius: 12px; overflow: hidden; background: #222; border: 1px solid #333; cursor: pointer; }
+        .artist-card.big { grid-column: span 2; height: 450px; }
+        @media (max-width: 480px) { .artist-card.big { grid-column: span 1; height: 380px; } }
+
+        .artist-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; filter: grayscale(100%); }
+        .artist-card:hover img { transform: scale(1.1); filter: grayscale(0%); }
+
+        .artist-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 25px; background: linear-gradient(to top, rgba(0,0,0,1), transparent); }
+        .tag { font-size: 10px; font-weight: 800; text-transform: uppercase; background: white; color: black; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        .big .tag { background: var(--primary); }
+        .artist-name { font-size: 26px; font-weight: 900; font-family: 'Syne'; text-transform: uppercase; margin: 0; }
+        .big .artist-name { font-size: 42px; color: var(--primary); }
+
+        /* --- TICKETS --- */
+        .tickets-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; }
+        .ticket { flex: 1; min-width: 280px; max-width: 350px; background: #111; border: 1px solid #333; padding: 40px 30px; border-radius: 20px; display: flex; flex-direction: column; transition: 0.3s; text-align: left; }
+        .ticket:hover { border-color: var(--primary); transform: translateY(-10px); }
+        .ticket.vip { border: 1px solid var(--accent); background: linear-gradient(160deg, #1a1a1a, #000); }
+        .t-name { font-size: 20px; font-weight: 800; margin-bottom: 10px; font-family: 'Syne'; }
+        .t-price { font-size: 40px; font-family: 'Syne'; font-weight: 800; margin-bottom: 30px; }
+        .t-price span { font-size: 14px; opacity: 0.5; font-family: 'Outfit'; }
+        .features { padding: 0; margin-bottom: 30px; }
+        .features li { list-style: none; margin-bottom: 15px; font-size: 15px; display: flex; gap: 10px; opacity: 0.8; }
+        .features i { color: var(--primary); }
+        .btn-buy { margin-top: auto; width: 100%; padding: 18px; border: none; background: white; color: black; font-weight: 800; text-transform: uppercase; border-radius: 10px; cursor: pointer; transition: 0.3s; font-size: 16px; font-family: 'Outfit'; }
+        .btn-buy:hover { background: var(--primary); }
+        .vip .btn-buy { background: var(--accent); color: white; }
+
+        /* --- MODALS (POPUP) --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #1a1a1a; padding: 40px; border-radius: 24px; width: 92%; max-width: 450px; position: relative; border: 1px solid #333; animation: popIn 0.3s ease; text-align: center; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #666; }
+        .modal-title { font-family: 'Syne'; font-size: 28px; margin-bottom: 25px; color: var(--primary); text-align: left; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; opacity: 0.8; letter-spacing: 1px; }
+        .custom-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #444; background: #222; color: white; font-size: 16px; outline: none; }
+        .custom-input:focus { border-color: var(--primary); }
+        .btn-submit { width: 100%; padding: 18px; background: var(--primary); color: black; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; text-transform: uppercase; font-size: 16px; }
+
+        footer { padding: 60px; text-align: center; border-top: 1px solid #222; font-size: 14px; color: #555; }
+    </style>
+</head>
+<body>
+
+    <!-- MODAL FORMULAIRE (INFO CLIENT) -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('info-modal')">&times;</span>
+            <div class="modal-title">FINALISER MON PASS</div>
+            
+            <div class="input-group">
+                <label class="input-label">NOM COMPLET</label>
+                <input type="text" id="user-name" placeholder="Ex: Jean Dupont" class="custom-input">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">EMAIL DE RÉCEPTION</label>
+                <input type="email" id="user-email" placeholder="exemple@gmail.com" class="custom-input">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">NUMÉRO WHATSAPP</label>
+                <input type="tel" id="user-phone" placeholder="+229 XX XX XX XX" class="custom-input">
+            </div>
+
+            <button class="btn-submit" onclick="submitToFedaPay()">VALIDER & PAYER</button>
+        </div>
+    </div>
+
+    <!-- MODAL SUCCÈS -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content" style="border-color: var(--primary);">
+            <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i data-lucide="check" style="color: black; width: 40px; height: 40px;"></i>
+            </div>
+            <h2 style="font-family: 'Syne'; margin-bottom: 10px;">PAIEMENT REÇU !</h2>
+            <p style="opacity: 0.8; margin-bottom: 30px;">Ton billet est en cours de génération.<br><b>Vérifie ton WhatsApp dans 1 minute !</b></p>
+            <button class="btn-submit" style="background: white;" onclick="location.reload()">FERMER</button>
+        </div>
+    </div>
+
+    <!-- MODAL ERREUR -->
+    <div id="error-modal" class="modal">
+        <div class="modal-content" style="border-color: var(--error);">
+            <div style="width: 80px; height: 80px; background: var(--error); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i data-lucide="x" style="color: white; width: 40px; height: 40px;"></i>
+            </div>
+            <h2 style="font-family: 'Syne'; margin-bottom: 10px;">OUPS...</h2>
+            <p style="opacity: 0.8; margin-bottom: 30px;">Le paiement a été annulé ou a échoué.<br>Aucun montant n'a été débité.</p>
+            <button class="btn-submit" style="background: var(--error); color: white;" onclick="closeModal('error-modal')">RÉESSAYER</button>
+        </div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo">COT'<span style="color:var(--primary)">VIBES</span></div>
+            <a href="#billetterie" class="btn-nav">Billetterie</a>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div style="z-index: 2;">
+            <p>15 - 16 AOÛT 2026 • COTONOU</p>
+            <h1>AFRICA <br> <span style="color: transparent; -webkit-text-stroke: 2px white;">IS NOW</span></h1>
+            <div style="margin-top: 40px;">
+                <a href="#billetterie" style="background: var(--primary); color: black; padding: 18px 50px; border-radius: 50px; font-weight: 900; text-transform: uppercase; text-decoration: none; font-size: 18px;">Prendre mon Pass</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LINE UP MASSIF -->
+    <section class="section">
+        <div class="sec-header">
+            <h2>LINE-UP <span>2026</span></h2>
+            <p style="opacity: 0.6; margin-top: 10px;">LA PLUS GROSSE SCÈNE D'AFRIQUE DE L'OUEST</p>
+        </div>
+
+        <div class="lineup-grid">
+            <div class="artist-card big">
+                <img src="https://rotatemagazine.com/wp-content/uploads/2024/01/Rema-Shot-by-John-Henry.jpg" alt="Rema">
+                <div class="artist-overlay"><div class="tag">NIGÉRIA</div><div class="artist-name">REMA</div></div>
+            </div>
+            <div class="artist-card big">
+                <img src="https://www.radiofrance.fr/s3/cruiser-production/2022/06/f2174cda-457d-42d4-9647-f44283f9510f/1200x680_07-04-2022-070422-tiakola-0748copy.jpg" alt="Tiakola">
+                <div class="artist-overlay"><div class="tag">FRANCE</div><div class="artist-name">TIAKOLA</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://i.ytimg.com/vi/KXmn-LWazy8/maxresdefault.jpg" alt="Vano">
+                <div class="artist-overlay"><div class="tag">BÉNIN</div><div class="artist-name">VANO BABY</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://afriquemagazine.com/sites/default/files/styles/galerie/public/2025-09/AFRIQUEMAGAZINE_467-468_20250808%20%281%29-45.jpg?h=3f61d7ba&itok=2vjP69vO" alt="Didi B">
+                <div class="artist-overlay"><div class="tag">CIV</div><div class="artist-name">DIDI B</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://www.bellanaija.com/wp-content/uploads/2025/01/instasave.website_469928580_18370662967116326_1475037954697117955_n.jpg" alt="Ayra Starr">
+                <div class="artist-overlay"><div class="tag">NIGÉRIA</div><div class="artist-name">AYRA STARR</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://cloudfront-eu-central-1.images.arcpublishing.com/leparisien/3QGQURWBRJDNXAQVEXUTQIVCPY.jpg" alt="Gazo">
+                <div class="artist-overlay"><div class="tag">FRANCE</div><div class="artist-name">GAZO</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://www.abidjanshow.com/templates/yootheme/cache/6e/Axel_Merry_Rap_Ivoire-6eed298a.png" alt="Axel">
+                <div class="artist-overlay"><div class="tag">BÉNIN</div><div class="artist-name">AXEL MERRYL</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://www.rapcity.fr/wp-content/uploads/2020/01/dadju-punchlines.jpg" alt="Dadju">
+                <div class="artist-overlay"><div class="tag">FRANCE</div><div class="artist-name">DADJU</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://cdn-images.dzcdn.net/images/artist/805b4849ab09e9fb0bb29ea467e49396/1900x1900-000000-80-0-0.jpg" alt="Asake">
+                <div class="artist-overlay"><div class="tag">NIGÉRIA</div><div class="artist-name">ASAKE</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://rapunchline.fr/wp-content/uploads/2024/10/fanicko-feat-vegedream-au-suivantfanicko-et-vegedream-un-duo-explosif-sur-au-suivant.jpg" alt="Fanicko">
+                <div class="artist-overlay"><div class="tag">BÉNIN</div><div class="artist-name">FANICKO</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://www.linfodrome.com/media/article/images/src/92202-ram.webp" alt="Paiya">
+                <div class="artist-overlay"><div class="tag">CIV</div><div class="artist-name">TEAM PAIYA</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://imgix.bustle.com/uploads/image/2024/4/30/96b9ed61-6133-4060-ba28-8ccb4519427b-img_7751.jpg?w=414&h=414&fit=crop&crop=faces&dpr=2" alt="Uncle Waffles">
+                <div class="artist-overlay"><div class="tag">SOUTH AFRICA</div><div class="artist-name">UNCLE WAFFLES</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://prod.cdn-medias.jeuneafrique.com/cdn-cgi/image/q=auto,f=auto,metadata=none,width=1280,height=960,fit=cover/https://prod.cdn-medias.jeuneafrique.com/medias/2025/05/09/jad20250509-ass-benin-musique-bobo-we.jpg" alt="Bobo Wè">
+                <div class="artist-overlay"><div class="tag">BÉNIN</div><div class="artist-name">BOBO WÈ</div></div>
+            </div>
+            <div class="artist-card">
+                <img src="https://blaque.fr/wp-content/uploads/2022/03/tayc-1200x900.webp" alt="Tayc">
+                <div class="artist-overlay"><div class="tag">FRANCE</div><div class="artist-name">TAYC</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BILLETTERIE -->
+    <section id="billetterie" class="section">
+        <div class="sec-header">
+            <h2>BILLETTERIE</h2>
+            <p style="opacity:0.6;">PAIEMENT MOBILE MONEY & CARTE BANCAIRE</p>
+        </div>
+
+        <div class="tickets-row">
+            <div class="ticket">
+                <div class="t-name">EARLY BIRD</div>
+                <div class="t-price">5.000 <span>FCFA</span></div>
+                <ul class="features">
+                    <li><i data-lucide="check"></i> Accès Festival 1 Jour</li>
+                    <li><i data-lucide="check"></i> Food Court Access</li>
+                </ul>
+                <button class="btn-buy" onclick="openInfoModal('Pass Jour', 100)">ACHETER</button>
+            </div>
+
+            <div class="ticket">
+                <div class="t-name" style="color:var(--primary)">PASS WEEK'ND</div>
+                <div class="t-price">10.000 <span>FCFA</span></div>
+                <ul class="features">
+                    <li><i data-lucide="check"></i> Accès Samedi & Dimanche</li>
+                    <li><i data-lucide="check"></i> Accès Prioritaire</li>
+                </ul>
+                <button class="btn-buy" style="background:var(--primary)" onclick="openInfoModal('Pass Weekend', 125)">ACHETER</button>
+            </div>
+
+            <div class="ticket vip">
+                <div class="t-name">VIP GOLD</div>
+                <div class="t-price">30.000 <span>FCFA</span></div>
+                <ul class="features">
+                    <li><i data-lucide="check"></i> Espace VIP Surélevé</li>
+                    <li><i data-lucide="check"></i> Boissons incluses</li>
+                </ul>
+                <button class="btn-buy" onclick="openInfoModal('Pass VIP', 150)">RÉSERVER VIP</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>COT'VIBES FESTIVAL 2026 • FIDJROSSÈ, COTONOU</p>
+    </footer>
+
+    <!-- LOGIQUE JS -->
+    <script>
+        lucide.createIcons();
+
+        let currentPlan = "";
+        let currentAmount = 0;
+
+        function openInfoModal(plan, amount) {
+            currentPlan = plan;
+            currentAmount = amount;
+            document.getElementById('info-modal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function submitToFedaPay() {
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            const phone = document.getElementById('user-phone').value;
+
+            if (!name || name.length < 2) { alert("Indique ton nom complet !"); return; }
+            if (!email || !email.includes('@')) { alert("Email invalide !"); return; }
+            if (!phone || phone.length < 8) { alert("Numéro WhatsApp invalide !"); return; }
+
+            closeModal('info-modal');
+
+            try {
+                let widget = FedaPay.init({
+                    public_key: 'pk_live_7lvC3MGGdjrdWEXaRP1Dm3QD', // TA CLÉ PUBLIQUE
+                    environment: 'live',
+                    transaction: {
+                        amount: currentAmount,
+                        description: "Achat Pass " + currentPlan,
+                        custom_metadata: {
+                            customer_name: name,
+                            whatsapp_number: phone,
+                            ticket_type: currentPlan,
+                            email_reception: email
+                        }
+                    },
+                    customer: {
+                        email: email,
+                        lastname: name,
+                        phone_number: { number: phone, country: 'bj' }
+                    },
+                    onComplete: function(data) {
+                        if (data.reason === FedaPay.CHECKOUT_COMPLETED) {
+                            document.getElementById('success-modal').style.display = 'flex';
+                            lucide.createIcons();
+                        } else {
+                            document.getElementById('error-modal').style.display = 'flex';
+                            lucide.createIcons();
+                        }
+                    }
+                });
+                widget.open();
+            } catch (e) {
+                alert("Erreur de chargement du paiement.");
+            }
+        }
+    </script>
+</body>
+</html>
